@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.raisetech.lecture10.mapper.MedicalRecordMapper">
+    <select id="findAll" parameterType="java.util.List"
+            resultType="com.raisetech.lecture10.entity.MedicalRecord">
+        SELECT * FROM medical_records
+    </select>
+
+    <select id="findByDisease" parameterType="java.util.List"
+            resultType="com.raisetech.lecture10.response.DiseaseResponse">
+        SELECT * FROM medical_records WHERE disease=#{disease}
+    </select>
+
+    <insert id="postMedicalRecord" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO medical_records(name,disease,medical_condition)
+        VALUES(#{name},#{disease},#{medicalCondition})
+    </insert>
+
+    <update id="patchMedicalRecord">
+        UPDATE medical_records SET medical_condition=#{request.medicalCondition} WHERE id=#{id}
+    </update>
+
+    <delete id="deleteMedicalRecord">
+        DELETE FROM medical_records WHERE id=#{id}
+    </delete>
+</mapper>
