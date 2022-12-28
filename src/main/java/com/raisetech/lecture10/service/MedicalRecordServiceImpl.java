@@ -1,5 +1,6 @@
 package com.raisetech.lecture10.service;
 
+import com.raisetech.lecture10.entity.IdRecord;
 import com.raisetech.lecture10.entity.MedicalRecord;
 import com.raisetech.lecture10.exeption.BadRequestException;
 import com.raisetech.lecture10.exeption.BatchUpdateException;
@@ -8,16 +9,15 @@ import com.raisetech.lecture10.mapper.MedicalRecordMapper;
 import com.raisetech.lecture10.request.DiseaseRequest;
 import com.raisetech.lecture10.request.MedicalRecordRequest;
 import com.raisetech.lecture10.response.DiseaseResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class MedicalRecordServiceImpl implements com.raisetech.lecture10.service.MedicalRecordService {
 	private final MedicalRecordMapper medicalRecordMapper;
-	public MedicalRecordServiceImpl(MedicalRecordMapper medicalRecordMapper) {
-		this.medicalRecordMapper = medicalRecordMapper;
-	}
 	@Override
 	public List<MedicalRecord> findAll() {
 		return medicalRecordMapper.findAll();
@@ -31,29 +31,26 @@ public class MedicalRecordServiceImpl implements com.raisetech.lecture10.service
 		}
 	}
 	@Override
-	public void postMedicalRecord(MedicalRecordRequest request) {
-		if ((request.medical_condition().equals("症状あり")) || (request.medical_condition().equals("症状なし"))) {
-			medicalRecordMapper.postMedicalRecord(request);
+	public int postMedicalRecord(IdRecord request) {
+		if ((request.getMedicalCondition().equals("症状あり")) || (request.getMedicalCondition().equals("症状なし"))) {
+			return this.medicalRecordMapper.postMedicalRecord(request);
 		} else {
-			throw new BadRequestException("medical_condition is wrong request");
+			throw new BadRequestException("medicalCondition is wrong request");
 		}
 	}
 	@Override
-	public void patchMedicalRecord(MedicalRecordRequest request) {
-		if ((!request.medical_condition().equals("症状あり")) && (!request.medical_condition().equals("症状なし"))) {
-			throw new BadRequestException("medical_condition is wrong request");
-		} else if (!medicalRecordMapper.patchMedicalRecord(request)) {
+	public void patchMedicalRecord(int id, MedicalRecordRequest request) {
+		if ((!request.medicalCondition().equals("症状あり")) && (!request.medicalCondition().equals("症状なし"))) {
+			throw new BadRequestException("medicalCondition is wrong request");
+		}
+		if (!medicalRecordMapper.patchMedicalRecord(id, request)) {
 			throw new BatchUpdateException("patient unsuccessfully updated");
-		} else {
-			medicalRecordMapper.patchMedicalRecord(request);
 		}
 	}
 	@Override
-	public void deleteMedicalRecord(MedicalRecordRequest request) {
-		if (!medicalRecordMapper.deleteMedicalRecord(request)) {
+	public void deleteMedicalRecord(int id) {
+		if (!medicalRecordMapper.deleteMedicalRecord(id)) {
 			throw new BatchUpdateException("patient unsuccessfully deleted");
-		} else {
-			medicalRecordMapper.deleteMedicalRecord(request);
 		}
 	}
 }

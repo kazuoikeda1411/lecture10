@@ -1,25 +1,26 @@
 package com.raisetech.lecture10.controller;
 
+import com.raisetech.lecture10.entity.IdRecord;
 import com.raisetech.lecture10.request.DiseaseRequest;
 import com.raisetech.lecture10.request.MedicalRecordRequest;
 import com.raisetech.lecture10.response.DiseaseResponse;
 import com.raisetech.lecture10.response.MedicalRecordResponse;
 import com.raisetech.lecture10.service.MedicalRecordService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.util.UriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
 @RestController
+@RequiredArgsConstructor
 public class MedicalRecordController {
 	private final MedicalRecordService medicalRecordService;
-	public MedicalRecordController(MedicalRecordService medicalRecordService) {
-		this.medicalRecordService = medicalRecordService;
-	}
-
 	@GetMapping("/medicalRecords")
 	public List<MedicalRecordResponse> getMedicalRecord() {
 		return medicalRecordService.findAll().stream().map(MedicalRecordResponse::new).toList();
@@ -28,19 +29,21 @@ public class MedicalRecordController {
 	public List<String> getPatients(DiseaseRequest disease) {
 		return medicalRecordService.findByDisease(disease).stream().map(DiseaseResponse::name).collect(toList());
 	}
-	@PostMapping("/medicalRecord")
-	public ResponseEntity postMedicalRecord(@RequestBody MedicalRecordRequest request) {
+	@PostMapping("/medicalRecords")
+	public ResponseEntity postMedicalRecord(@RequestBody IdRecord request) {
 		medicalRecordService.postMedicalRecord(request);
-		return ResponseEntity.ok(Map.of("id", request.id(), "message", "patient successfully created"));
+		return ResponseEntity.ok(Map.of("id", request.getId(), "message", "patient successfully created"));
 	}
-	@PatchMapping("/medicalRecord")
-	public ResponseEntity patchMedicalRecord(@RequestBody MedicalRecordRequest request) {
-		medicalRecordService.patchMedicalRecord(request);
-		return ResponseEntity.ok(Map.of("id", request.id(), "message", "patient successfully updated"));
+	@PatchMapping("/medicalRecords/{id}")
+	public ResponseEntity patchMedicalRecord(@PathVariable("id") int id, @RequestBody MedicalRecordRequest request, UriComponentsBuilder uriBuilder) {
+		URI url = uriBuilder.path("/medicalRecords/" + id).build().toUri();
+		medicalRecordService.patchMedicalRecord(id, request);
+		return ResponseEntity.created(url).body(Map.of("id", id, "message", "patient successfully updated"));
 	}
-	@DeleteMapping("/medicalRecord")
-	public ResponseEntity deleteMedicalRecord(@RequestBody MedicalRecordRequest request) {
-		medicalRecordService.deleteMedicalRecord(request);
-		return ResponseEntity.ok(Map.of("id", request.id(), "message", "patient successfully deleted"));
+	@DeleteMapping("/medicalRecords/{id}")
+	public ResponseEntity deleteMedicalRecord(@PathVariable("id") int id, UriComponentsBuilder uriBuilder) {
+		URI url = uriBuilder.path("/medicalRecords/" + id).build().toUri();
+		medicalRecordService.deleteMedicalRecord(id);
+		return ResponseEntity.created(url).body(Map.of("id", id, "message", "patient successfully deleted"));
 	}
 }

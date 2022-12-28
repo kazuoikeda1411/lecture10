@@ -6,12 +6,12 @@ public class MedicalRecordResponse {
 	private final int id;
 	private final String name;
 	private final String disease;
-	private final String medical_condition;
+	private final String medicalCondition;
 	public MedicalRecordResponse(MedicalRecord medicalRecord) {
 		this.id = medicalRecord.id();
 		this.name = medicalRecord.name();
 		this.disease = medicalRecord.disease();
-		this.medical_condition = medicalRecord.medical_condition();
+		this.medicalCondition = medicalRecord.medicalCondition();
 	}
 	public int getId() {
 		return id;
@@ -22,7 +22,7 @@ public class MedicalRecordResponse {
 	public String getDisease() {
 		return disease;
 	}
-	public String getMedical_condition() {
-		return medical_condition;
+	public String getMedicalCondition() {
+		return medicalCondition;
 	}
 }
